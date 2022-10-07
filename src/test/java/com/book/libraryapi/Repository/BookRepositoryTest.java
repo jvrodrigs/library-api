@@ -28,7 +28,7 @@ public class BookRepositoryTest {
     public void testReturnTrueWhenIsbnExists(){
         String isbn = "2509";
 
-        Book book = Book.builder().author("João").title("Rodando o Mundo").isbn(isbn).build();
+        Book book = createNewBookEntityTest(isbn);
         testEntityManager.persist(book);
 
         boolean exists = repository.existsByIsbn(isbn);
@@ -44,5 +44,44 @@ public class BookRepositoryTest {
         boolean exists = repository.existsByIsbn(isbn);
 
         assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("Obter informações de um livro pelo id")
+    public void testFindByIdBook(){
+        Book book = createNewBookEntityTest("2509");
+        testEntityManager.persist(book);
+
+        boolean exists = repository.findById(book.getId()).isPresent();
+
+        assertThat(exists).isTrue();
+    }
+
+    @Test
+    @DisplayName("Salvar um novo livro.")
+    public void testSaveBook(){
+        Book book = createNewBookEntityTest("2509");
+        Book savedBook = repository.save(book);
+
+        assertThat(savedBook.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deletar um livro.")
+    public void testDeleteBook(){
+        Book book = createNewBookEntityTest("2509");
+        testEntityManager.persist(book);
+
+        Book findBook = testEntityManager.find(Book.class, book.getId());
+
+        repository.delete(findBook);
+
+        Book deletedBook = testEntityManager.find(Book.class, book.getId());
+
+        assertThat(deletedBook).isNotNull();
+    }
+
+    private Book createNewBookEntityTest(String isbn) {
+        return Book.builder().author("João").title("Rodando o Mundo").isbn(isbn).build();
     }
 }
