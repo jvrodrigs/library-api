@@ -12,9 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -154,6 +159,25 @@ public class BookServiceTest {
 
         //não foi executando nenhuma vez.
         Mockito.verify(repository, Mockito.never()).save(book);
+    }
+
+    @Test
+    @DisplayName("Buscar/filtrar livros pelas suas própriedades")
+    public void testFindBookFilter(){
+        Book book = createValidBook();
+        PageRequest pgRequest = PageRequest.of(0,10);
+
+        Page<Book> page = new PageImpl<Book>(Arrays.asList(book), pgRequest, 1);
+
+        Mockito.when(repository.findAll(Mockito.any(Example.class), Mockito.any(PageRequest.class)))
+                .thenReturn(page);
+
+        Page<Book> pgResult = service.find(book, pgRequest);
+
+        assertThat(pgResult.getTotalElements()).isEqualTo(1);
+        assertThat(pgResult.getContent()).isEqualTo(Arrays.asList(book));
+        assertThat(pgResult.getPageable().getPageNumber()).isEqualTo(0);
+        assertThat(pgResult.getPageable().getPageSize()).isEqualTo(10);
     }
 
     private Book createValidBook(){

@@ -6,6 +6,9 @@ import com.book.libraryapi.Exception.BusinessException;
 import com.book.libraryapi.Model.Book;
 import com.book.libraryapi.Service.BookService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -16,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/books")
@@ -42,6 +46,18 @@ public class BookController {
         return service.getById(id)
                 .map(bk -> modelMapper.map(bk, BookDTO.class))
                 .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping
+    public Page<BookDTO> findBookAndQuery(BookDTO dto, Pageable pgRequest){
+        Book filter = modelMapper.map(dto, Book.class);
+        Page<Book> result = service.find(filter, pgRequest);
+
+        List<BookDTO> list = result.getContent().stream()
+                .map(entity -> modelMapper.map(entity, BookDTO.class))
+                .collect(Collectors.toList());
+
+        return new PageImpl<BookDTO>(list, pgRequest, result.getTotalElements());
     }
 
     @DeleteMapping("/{id}")
