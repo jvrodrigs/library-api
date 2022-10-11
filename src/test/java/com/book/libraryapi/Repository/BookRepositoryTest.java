@@ -81,7 +81,7 @@ public class BookRepositoryTest {
         assertThat(deletedBook).isNotNull();
     }
 
-    private Book createNewBookEntityTest(String isbn) {
+    public static Book createNewBookEntityTest(String isbn) {
         return Book.builder().author("João").title("Rodando o Mundo").isbn(isbn).build();
     }
 }
