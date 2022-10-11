@@ -2,9 +2,13 @@ package com.book.libraryapi.Controller;
 
 import com.book.libraryapi.Controller.Exceptions.ApiErros;
 import com.book.libraryapi.Dto.BookDTO;
+import com.book.libraryapi.Dto.LoanDto;
 import com.book.libraryapi.Exception.BusinessException;
 import com.book.libraryapi.Model.Book;
+import com.book.libraryapi.Model.Loan;
 import com.book.libraryapi.Service.BookService;
+import com.book.libraryapi.Service.LoanService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,15 +27,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/books")
+@RequiredArgsConstructor
 public class BookController {
 
     private BookService service;
     private ModelMapper modelMapper;
-
-    public BookController(BookService service, ModelMapper modelMapper) {
-        this.service = service;
-        this.modelMapper = modelMapper;
-    }
+    private LoanService loanService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -78,6 +79,21 @@ public class BookController {
                 book = service.update(book);
                 return modelMapper.map(book, BookDTO.class);
         }).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("{id}/loans")
+    public Page<LoanDto> LoansByBook(@PathVariable Long id, Pageable pageable){
+        Book book = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Page<Loan> result = loanService.getLoansByBook(book, pageable);
+
+        List<LoanDto> list = result.getContent().stream().map( loan -> {
+                   Book bk = loan.getBook();
+                   BookDTO bookDTO = modelMapper.map(bk, BookDTO.class);
+                   LoanDto loanDTO = modelMapper.map(loan, LoanDto.class);
+                   loanDTO.setBookDTO(bookDTO);
+                   return loanDTO;
+        }).collect(Collectors.toList());
+        return new PageImpl<LoanDto>(list, pageable, result.getTotalElements());
     }
 
 }

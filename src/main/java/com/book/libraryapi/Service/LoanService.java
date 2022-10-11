@@ -1,6 +1,7 @@
 package com.book.libraryapi.Service;
 
 import com.book.libraryapi.Dto.LoanFilterDTO;
+import com.book.libraryapi.Model.Book;
 import com.book.libraryapi.Model.Loan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface LoanService {
     Loan update(Loan loan);
 
     Page<Loan> find(LoanFilterDTO filterDTO, Pageable pgRequest);
+
+    Page<Loan> getLoansByBook(Book book, Pageable pageable);
 }
