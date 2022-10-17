@@ -24,4 +24,5 @@ public class Loan {
     private Book book;
     private LocalDate loanDate;
     private Boolean returned;
+    private String customerEmail;
 }

@@ -58,7 +58,7 @@ public class LoanControllerTest {
     @Test
     @DisplayName("Realizar um emprestimo")
     public void testCreateLoan() throws Exception{
-        LoanDto dto = LoanDto.builder().isbn("2509").customar("Book Consumer").build();
+        LoanDto dto = LoanDto.builder().isbn("2509").customer("Book Consumer").customerEmail("customer_test@email.com").build();
 
         String json = new ObjectMapper().writeValueAsString(dto);
         Book book = Book.builder().id(1L).isbn(dto.getIsbn()).build();
@@ -84,7 +84,7 @@ public class LoanControllerTest {
     @Test
     @DisplayName("Retornar error quando um Isbn for invalido.")
     public void testInvalidIsbnCreateRequest() throws Exception{
-        LoanDto dto = LoanDto.builder().isbn("2509").customar("Book Consumer").build();
+        LoanDto dto = LoanDto.builder().isbn("2509").customer("Book Consumer").customerEmail("customer_test@email.com").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
         BDDMockito.given(bookService.getBookByIsbn("2509"))
@@ -104,7 +104,7 @@ public class LoanControllerTest {
     @Test
     @DisplayName("Retornar error quando um livro estiver emprestado.")
     public void testLoanedBookErrorOnCreate() throws Exception{
-        LoanDto dto = LoanDto.builder().isbn("2509").customar("Book Consumer").build();
+        LoanDto dto = LoanDto.builder().isbn("2509").customer("Book Consumer").customerEmail("customer_test@email.com").build();
         String json = new ObjectMapper().writeValueAsString(dto);
 
         Book book = Book.builder().id(1L).isbn(dto.getIsbn()).build();
