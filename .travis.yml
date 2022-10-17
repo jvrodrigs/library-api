@@ -1,4 +1,4 @@
 language: java
 jdk:
-  - oraclejdk811
+  - oraclejdk8
 dist: trusty
