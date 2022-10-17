@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 @Api("Book API")
 public class BookController {
 
-    private BookService service;
-    private ModelMapper modelMapper;
-    private LoanService loanService;
+    private final BookService service;
+    private final ModelMapper modelMapper;
+    private final LoanService loanService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -78,7 +78,7 @@ public class BookController {
 
     @PutMapping("/{id}")
     @ApiOperation("Upgrade a book")
-    public BookDTO updateBook(@PathVariable("id") Long id, BookDTO bookUpdateBody){
+    public BookDTO updateBook(@PathVariable("id") Long id, @RequestBody @Valid BookDTO bookUpdateBody){
         return service.getById(id)
             .map(book -> {
                 book.setAuthor(bookUpdateBody.getAuthor());

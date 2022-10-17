@@ -78,7 +78,7 @@ public class BookRepositoryTest {
 
         Book deletedBook = testEntityManager.find(Book.class, book.getId());
 
-        assertThat(deletedBook).isNotNull();
+        assertThat(deletedBook).isNull();
     }
 
     public static Book createNewBookEntityTest(String isbn) {
